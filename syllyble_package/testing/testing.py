@@ -69,19 +69,4 @@ for word in x:
         print(ipa_word)
         print(SyllySplit(ipa_word).get_list())
 '''
-    #Input processing logic stuff. Not currently important
-
-    if does_exist(word) == False:
-        #print('Process new word')
-        search = SyllySearch(word).wanted_data
-        if str(search) == 'None': print(f"log this: {word} has no ipa prs")
-        else: sql.insert_data('words', search)
-    else: None
-        #print('Pull data from table!')
-'''        
-'''
-
-print(sql.search_db('words'))
-does_exist('ho')
-''
 '''
