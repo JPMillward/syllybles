@@ -49,10 +49,8 @@ def does_exist(input_text, table = 'words', column = 'word'):
    check_exist = sql.search_db(table, column, match = input_text, return_column = 'word', discrete = True)
    if str(check_exist) == input_text:
        #print(f"{input_text} is already in Table: {table}")
-       return True 
-   else: 
-       #print(f"{input_text} is not in Table: {table}")
-       return False
+       return True  
+   return False
 
 def get_ipa(input_word):
     ipa_word = sql.search_db('words', 'word', input_word).iloc[0]['ipa']
