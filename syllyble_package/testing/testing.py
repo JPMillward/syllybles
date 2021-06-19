@@ -18,53 +18,44 @@ from syllyble_package.classes.syllysql import sql
 from syllyble_package.classes.syllysearch import SyllySearch
 from syllyble_package.classes.syllysplit import SyllySplit
 from syllyble_package.classes.syllybuild import SyllyBuild
+from syllyble_package.classes.syllysummon import SyllySummon
+
 import pandas as pd
 import re
 #print(sql.data_tables)
-input_word = "lead"
-test = input_word
-table = 'words'
 
+directory = "/Users/johnm/Documents/Projects/GeniusLyrics/"
+text_file = "Look Over Your Shoulder (feat. Kendrick Lamar) by Busta Rhymes.txt"
+path = directory + text_file
 
-def sort_ubo(ubo_in):
-    #Read and Search
-    f = open(ubo_in, 'r')
-    pattern = re.compile('\\w+', re.ASCII)
-    ref = re.findall(pattern, f.read())
-    
-    #Pandas to sort / manipulate
-    df = pd.Series(ref, dtype='string')
-    df = df.str.lower().str.strip().value_counts().rename_axis('words').reset_index()
-    
-    #Make list
-    unique_words = []
-    #print(range(len(df)))
-    for x in range(len(df)):
-        unique_words.append(df['words'].iloc[x])
-    #Output
-    #df.to_csv(ubo_out, index=None, columns=['words'], sep=" ", header=None)
-    return unique_words
-
-def does_exist(input_text, table = 'words', column = 'word'):
-   check_exist = sql.search_db(table, column, match = input_text, return_column = 'word', discrete = True)
-   if str(check_exist) == input_text:
-       #print(f"{input_text} is already in Table: {table}")
-       return True  
-   return False
 
 def get_ipa(input_word):
     ipa_word = sql.search_db('words', 'word', input_word).iloc[0]['ipa']
     return ipa_word
-        
-source = "/Users/johnm/Documents/Projects/testcases/"
-input_file = "11second.txt"
-x = sort_ubo(source + input_file)
-#print(x)
-for word in x:
-    if does_exist(word) == True:
-        ipa_word = get_ipa(word)
-        print(word)
-        print(ipa_word)
-        print(SyllySplit(ipa_word).get_list())
-'''
-'''
+
+def begin_build():
+    smn = SyllySummon(path)
+    #print(smn.structure)
+    smn.get_unique_words()
+    for index in range(len(smn.unique_words)):
+        one_word = smn.unique_words[index]
+        print(one_word)
+        if sql.does_exist(smn.unique_words[index]) == False:
+             if not isinstance(SyllySearch(one_word).keyvalues, dict):
+                 log_miss(one_word)
+                 break
+             print(SyllySearch(one_word).get_result)
+             
+        else: 
+            print("{one_word} is in syllyble datatable")
+
+def log_miss(word):
+    print(f"ERROR: No key value components found for {word}. logging")
+    log_file = open(directory + "word_log.txt", 'a')
+    for line in log_file:
+        if line == word: return(f"{word} already in log. Do something about it.")
+    log_file.write(word)
+    return(f"Successfully logged {word}")
+
+
+begin_build()

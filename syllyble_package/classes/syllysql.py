@@ -26,7 +26,7 @@ class MillSql():
         for table in valid_tables:
             dictionary = {table:self.list_columns(table)}
             self.valid_queries.update(dictionary)
-        print(self.valid_queries)
+        #print(self.valid_queries)
             
 
     def list_tables(self):
@@ -79,17 +79,29 @@ class MillSql():
     
     
     ###Will not work
-    def insert_table(self, table, data_frame):
-        if table in self.valid_queries: return(f"Error: {table} exists. Please insert_data() instead")
-        self.valid_queries.append(table)
-        data_frame.to_sql(table, self.dbc)
-        return print(f"***added {table} to sqlite_master***")
+    def insert_table(self, table_name, data_frame):
+        if table_name in self.valid_queries: return print(f"Error: {table_name} exists. Please insert_data() instead")
+        data_frame.to_sql(table_name, self.dbc)
+        self.generate_query_whitelist()
+        return print(f"***added {table_name} to sqlite_master***")
         
     def drop_table(self, table):
-        if table not in self.valid_queries.keys(): return("Error: Cannot drop {table} as it does not exist.")
-        print(f"dropping {table} from database")
+        if table not in self.valid_queries.keys(): return print("Error: Cannot drop {table} as it does not exist.")
         drop_table = f"""DROP TABLE {table};"""
         pd.read_sql(drop_table, self.dbc)
-        return
-
+        self.generate_query_whitelist()
+        return  print(f"dropping {table} from database")
+    
+    def does_exist(self, input_text, table = 'words', column = 'word'):
+        check_exist = sql.search_db(table = table, column = column, match = input_text, return_column = 'word', discrete = True)
+        if str(check_exist) == input_text:
+            return True  
+        return False
+    
+    def get_ipa(self, input_word):
+        ipa_word = sql.search_db(table = 'words', column = 'word', match = str(input_word), return_column='ipa')
+        if len(ipa_word) < 1 : return input_word
+        return ipa_word.iloc[0]
+    
 sql = MillSql(database_connection)
+print(sql.valid_queries)
