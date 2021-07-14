@@ -10,6 +10,7 @@ Query Webster API to get informatioon.
 
 import requests
 import pandas as pd
+import re
 
 class SyllySearch():
     
@@ -35,10 +36,12 @@ class SyllySearch():
                 self.ipa = self.data[0][loc]['prs'][0]['ipa']
             else: return False
             return True
+  
     
     def get_result(self):
         return self.wanted_data           
-                                  
+   
+                               
     def search_webster(self):
         if self.assign_ipa() == False: return
         self.keyvalues = {'word' : self.query, 'ipa': self.ipa}
@@ -54,12 +57,22 @@ class SyllySearch():
             new_values = {variation:[homograph]}
             self.keyvalues.update(new_values)
 
-
+    def affix_validation(self):
+        returned_word_id = self.data[0]['meta']['id']
+        print(self.wanted_data)
+        pattern = re.compile("\w+'*\w*")
+        match = re.search(pattern, returned_word_id)
+        print(f"comparing {match[0]} to {self.query}")
+        if match[0] == self.query:
+            print("AYYY")
+        else:
+                print(f"{match[0]} DOES NOT MATCH {self.query}, validating.")
+    
     def validate_homograph(self):
         self.homograph_list = []
         check_homograph = 'hom'
         #print(self.data[0].keys())
-        if check_homograph not in self.data[0].keys(): return print("No Homograph  for {self.query}")
+        if check_homograph not in self.data[0].keys(): return #print("No Homograph  for {self.query}")
         for dictionary in self.data:
             word_id = dictionary['meta']['id']
             if self.query == word_id[:-2]:
@@ -71,5 +84,6 @@ class SyllySearch():
                 if homograph not in self.homograph_list and homograph != self.ipa:
                     self.homograph_list.append(homograph)  
        
-    
-   
+test_list = ['completely', 'deeds', "that's", 'rhymes', 'swindled', "it's"] 
+for word in test_list:
+    SyllySearch(word).affix_validation()   
