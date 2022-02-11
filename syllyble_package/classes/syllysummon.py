@@ -28,7 +28,7 @@ class SyllySummon():
         word_list = re.findall(pattern, self.raw_text)
         #print(word_list)
         self.word_list = word_list
-        return word_list
+        return self.word_list
     
     def get_unique_words(self)  :
         self.get_unique_count()

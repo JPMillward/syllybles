@@ -53,6 +53,7 @@ class MillSql():
             
     def search_db(self, table, column = None, match = None, return_column = None, discrete = False):
         if self.validate_input(table, column, match) != True: return print("Error: Invalid Query")
+        print(f"Searching Database for {match}")
         show_table = """SELECT * FROM """ + table
 
         if  match == None or str(match) == 'None' or len(str(match)) == 0: param = None
@@ -65,14 +66,12 @@ class MillSql():
         ps_show_table = pd.read_sql(show_table, self.dbc,  params=param, index_col=None).drop(columns='index')
         if len(ps_show_table) > 0: ret_table = ps_show_table.iloc[0] if discrete == True else ps_show_table
         else: ret_table = ps_show_table
-        #print(ret_table)
-        #print('\n\n\n')
         if  return_column == None: return ret_table
         else: return ret_table[return_column]
     
     
     def insert_data(self, table, data_frame):
-        if self.validate_input(table_name) == False: return print(f"Error: {table} does not exist.")
+        if self.validate_input(table) == False: return print(f"Error: {table} does not exist.")
         data_frame.to_sql(table, self.dbc, if_exists='append')
         return(f"***added row to {table}***")
     
@@ -92,7 +91,7 @@ class MillSql():
            return False
         else: valid_table = True
         
-        if column_name != None and column not in self.valid_queries[table_name]:
+        if column_name != None and column_name not in self.valid_queries[table_name]:
            valid_column = False
         if column_name in self.valid_queries[table_name]: 
            valid_column = True
@@ -103,7 +102,7 @@ class MillSql():
         
         #Return Logic
         valid_list = [valid_table, valid_column, valid_string]
-        print(valid_list)
+        #print(valid_list)
         if False in valid_list: return False
         return True  
            
@@ -156,6 +155,7 @@ class MillSql():
     def does_exist(self, input_text, table = 'words', column = 'word'):
         check_exist = sql.search_db(table = table, column = column, match = input_text, return_column = 'word', discrete = True)
         if str(check_exist) == input_text:
+            print(f"{str(check_exist)} || {input_text}")
             return True  
         return False
     

@@ -14,6 +14,7 @@ Created on Tue Apr 20 22:07:07 2021
 @author: johnm
 """
 
+import pathlib
 from syllyble_package.classes.syllysql import sql
 from syllyble_package.classes.syllysearch import SyllySearch
 from syllyble_package.classes.syllysplit import SyllySplit
@@ -36,26 +37,28 @@ def get_ipa(input_word):
 def begin_build():
     smn = SyllySummon(path)
     #print(smn.structure)
-    smn.get_unique_words()
-    for index in range(len(smn.unique_words)):
-        one_word = smn.unique_words[index]
+    unique_word_list = smn.get_unique_words()
+    #print(smn.get_unique_words())
+    
+    for index in range(len(unique_word_list)):
+        one_word = unique_word_list[index]
         print(one_word)
-        if sql.does_exist(smn.unique_words[index]) == False:
-             if not isinstance(SyllySearch(one_word).keyvalues, dict):
+        
+        if sql.does_exist(one_word) == False:
+            print(f"{one_word} is not in the database")
+            
+            if not isinstance(SyllySearch(one_word).keyvalues, dict):
                  log_miss(one_word)
-                 break
-             print(SyllySearch(one_word).get_result)
+                 
+            else:
+                 print(SyllySearch(one_word).get_result)
              
         else: 
-            print("{one_word} is in syllyble datatable")
+            print(f"{one_word} is in syllyble datatable")
 
 def log_miss(word):
-    print(f"ERROR: No key value components found for {word}. logging")
-    log_file = open(directory + "word_log.txt", 'a')
-    for line in log_file:
-        if line == word: return(f"{word} already in log. Do something about it.")
-    log_file.write(word)
-    return(f"Successfully logged {word}")
+    print(f"ERROR: UnSuccessfully logged {word}. Implement proper logging procedures")
 
 
-begin_build()
+print(pathlib.Path.cwd())
+#begin_build()

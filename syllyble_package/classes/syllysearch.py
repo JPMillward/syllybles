@@ -64,7 +64,7 @@ class SyllySearch():
         match = re.search(pattern, returned_word_id)
         print(f"comparing {match[0]} to {self.query}")
         if match[0] == self.query:
-            print("AYYY")
+            print("100% Match")
         else:
                 print(f"{match[0]} DOES NOT MATCH {self.query}, validating.")
     
@@ -83,7 +83,9 @@ class SyllySearch():
                 
                 if homograph not in self.homograph_list and homograph != self.ipa:
                     self.homograph_list.append(homograph)  
-       
-test_list = ['completely', 'deeds', "that's", 'rhymes', 'swindled', "it's"] 
-for word in test_list:
-    SyllySearch(word).affix_validation()   
+
+
+#Test Case        
+#test_list = ['completely', 'deeds', "that's", 'rhymes', 'swindled', "it's"] 
+#for word in test_list:
+#    SyllySearch(word).affix_validation()   
